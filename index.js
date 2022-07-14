@@ -7,13 +7,17 @@
 let hour = document.querySelector(".hour-hand");
 let minute = document.querySelector(".minute-hand");
 let second = document.querySelector(".second-hand");
-
-function clock() {
+function clock(offsetTZ) {
   let d = new Date();
+  // console.log(utc);
+  let offsetUTC = d.getTimezoneOffset();
+  // console.log(offsetUTC * 60 * 1000);
+  d.setMinutes(d.getMinutes() + offsetUTC);
+  d.setSeconds(d.getSeconds() + offsetTZ);
   let hr = d.getHours();
   let min = d.getMinutes();
   let sec = d.getSeconds();
-  //   console.log(hr);
+  //^   rotation of the hands
   let hr_rotation = (hr / 12) * 360 + (min / 60) * 30 + 90;
   let min_rotation = (min / 60) * 360 + (sec / 60) * 6 + 90;
   let sec_rotation = (sec / 60) * 360 + 90;
@@ -22,9 +26,8 @@ function clock() {
   minute.style.transform = `rotate(${min_rotation}deg)`;
   second.style.transform = `rotate(${sec_rotation}deg)`;
 }
-
-setInterval(clock, 1000);
-
+let timezone = setInterval(clock, 1000, 0);
+// let clockInterval = setInterval(clock, 1000, 0);
 //^-------------------------------------------------------------------------
 //^--------------- geolocation portion -------------------------------------
 //^-------------------------------------------------------------------------
@@ -81,6 +84,9 @@ function weatherDisplay(obj) {
 
   minTemp.innerHTML = "🔻" + Math.round(obj.main.temp_min) + celsius;
   maxTemp.innerHTML = "🔺" + Math.round(obj.main.temp_max) + celsius;
+  clearInterval(timezone);
+
+  timezone = setInterval(clock, 1000, obj.timezone);
 }
 
 function getWeather(url) {
