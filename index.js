@@ -28,18 +28,10 @@ setInterval(clock, 1000);
 //^-------------------------------------------------------------------------
 //^--------------- geolocation portion -------------------------------------
 //^-------------------------------------------------------------------------
-let latitude = 44.439663;
-let longitude = 26.096306;
 
-if (`geolocation` in navigator) {
-  navigator.geolocation.getCurrentPosition((position) => {
-    latitude = position.coords.latitude;
-    longitude = position.coords.longitude;
-    console.log("Latitude is " + latitude + "\n" + "Longitude is " + longitude);
-  });
-} else {
-  alert(`Geolocation is not available`);
-}
+let units = `metric`;
+let url = ``;
+const apiKey = `806818a233829c2e1d3c2dd7b39346a3`;
 //^-------------------------------------------------------------------------
 //^--------------- weather portion -----------------------------------------
 //^-------------------------------------------------------------------------
@@ -65,7 +57,7 @@ function dataLogger(obj) {
 }
 const celsius = "&#8451";
 function weatherDisplay(obj) {
-  dataLogger(obj);
+  // dataLogger(obj);
   // currentTemp.innerHTML =
   //   "Our current temperature is " + obj.main.temp + " &#8451";
   // maxTemp.innerHTML = "The day's maximum is " + obj.main.temp_max + " &#8451";
@@ -81,8 +73,8 @@ function weatherDisplay(obj) {
   )}${celsius}`;
 
   //? min-max temperature div
-  let minMaxTemp = document.querySelector(`.min-max-container`);
-
+  let location = document.querySelector(`.location`);
+  location.innerHTML = obj.name;
   //? min and max temperature div
   let minTemp = document.querySelector(`.min`);
   let maxTemp = document.querySelector(`.max`);
@@ -91,9 +83,64 @@ function weatherDisplay(obj) {
   maxTemp.innerHTML = "🔺" + Math.round(obj.main.temp_max) + celsius;
 }
 
-let url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=806818a233829c2e1d3c2dd7b39346a3`;
-
 function getWeather(url) {
+  fetch(url)
+    .then(function (response) {
+      // console.log(`new latitude: ${latitude} and new longitude: ${longitude}`);
+      // console.log(response);
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error("Error encountered");
+      }
+    })
+    .then(function (obj) {
+      console.log(obj);
+      weatherDisplay(obj);
+    })
+    .catch(function (error) {
+      alert(error);
+    });
+}
+
+function makeURL(lat, lon, units) {
+  return `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=${units}&appid=${apiKey}`;
+}
+
+function initGeo() {
+  if (`geolocation` in navigator) {
+    navigator.geolocation.getCurrentPosition((position) => {
+      let latitude = position.coords.latitude;
+      let longitude = position.coords.longitude;
+      console.log(
+        "Latitude is " + latitude + "\n" + "Longitude is " + longitude
+      );
+      let url = makeURL(latitude, longitude, units);
+      getWeather(url);
+      let coords = [latitude, longitude];
+      return coords;
+    });
+  } else {
+    alert(`Geolocation is not available`);
+  }
+}
+
+function updateTemp(lat, lon, units) {
+  makeURL(lat, lon, units);
+  getWeather(url);
+  console.log(`update called`);
+}
+
+// console.log(latitude, longitude);
+initGeo();
+const geoInterval = setInterval(initGeo, 60000);
+let searchInterval;
+function makeSearchURL(src) {
+  return `http://api.openweathermap.org/geo/1.0/direct?q=${src}&limit=1&appid=${apiKey}`;
+  // console.log(`${url}`);
+}
+
+function getSearchWeather(url) {
   fetch(url)
     .then(function (response) {
       console.log(response);
@@ -104,10 +151,81 @@ function getWeather(url) {
       }
     })
     .then(function (obj) {
-      weatherDisplay(obj);
+      console.log(obj);
+      if (!obj.length) {
+        alert(`City not found`);
+        return;
+      }
+      let latitude = obj[0].lat;
+      let longitude = obj[0].lon;
+      console.log(latitude, longitude);
+      let url = makeURL(latitude, longitude, units);
+      console.log(url);
+      clearInterval(geoInterval);
+      getWeather(url);
+      if (searchInterval) {
+        clearInterval(searchInterval);
+        searchInterval = setInterval(getWeather, 60000, url);
+        console.log(`i'm in search interval`);
+      } else {
+        searchInterval = setInterval(getWeather, 60000, url);
+      }
     })
     .catch(function (error) {
       alert(error);
     });
 }
-setTimeout(getWeather, 6000, url);
+
+function searchEnter(ele) {
+  if (event.key === `Enter`) {
+    console.log(ele.value);
+    if (ele.value === "") return;
+    let city = ele.value;
+    ele.value = ``;
+
+    let url = makeSearchURL(city);
+    console.log(url);
+    getSearchWeather(url);
+  }
+}
+function search(ele) {
+  let city = ele.textContent;
+  console.log(city);
+  document.querySelector(".input").value = "";
+  document.getElementById("result").innerHTML = "";
+  let url = makeSearchURL(city);
+  console.log(url);
+  getSearchWeather(url);
+}
+let search_terms = [
+  `Brasov`,
+  `Constanta`,
+  `Targoviste`,
+  `Campulung`,
+  `Slobozia`,
+  `Busteni`,
+  `Braila`,
+];
+
+function autoCompleteMatch(input) {
+  if (input == ``) {
+    return [];
+  }
+  let reg = new RegExp(input);
+  return search_terms.filter(function (term) {
+    if (term.toLowerCase().match(reg)) {
+      return term;
+    }
+  });
+}
+
+function showResults(val) {
+  let res = document.getElementById("result");
+  res.innerHTML = "";
+  let list = "";
+  let terms = autoCompleteMatch(val.toLowerCase());
+  for (let i = 0; i < terms.length; i++) {
+    list += '<li onclick="search(this)">' + terms[i] + "</li>";
+  }
+  res.innerHTML = "<ul>" + list + "</ul>";
+}

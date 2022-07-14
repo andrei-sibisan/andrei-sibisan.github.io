@@ -14,29 +14,44 @@
     />
   </head>
   <body>
-    <div class="widget sun">
-      <div class="outer-clock-face">
-        <div class="marking marking-one"></div>
-        <div class="marking marking-two"></div>
-        <div class="marking marking-three"></div>
-        <div class="marking marking-four"></div>
-        <div class="inner-clock-face">
-          <div class="hand hour-hand"></div>
-          <div class="hand minute-hand"></div>
-          <div class="hand second-hand"></div>
-        </div>
+    <div class="overcontainer sun">
+      <div class="div-input">
+        <form autocomplete="off">
+          <input
+            class="input"
+            type="text"
+            placeholder="Enter your city"
+            onkeydown="searchEnter(this)"
+            onkeyup="showResults(this.value)"
+          />
+          <div id="result"></div>
+        </form>
       </div>
+      <div class="widget">
+        <div class="outer-clock-face">
+          <div class="marking marking-one"></div>
+          <div class="marking marking-two"></div>
+          <div class="marking marking-three"></div>
+          <div class="marking marking-four"></div>
+          <div class="inner-clock-face">
+            <div class="hand hour-hand"></div>
+            <div class="hand minute-hand"></div>
+            <div class="hand second-hand"></div>
+          </div>
+        </div>
 
-      <div class="weather-container">
-        <div class="main-temp"></div>
-        <div class="feels-like"></div>
-        <div class="min-max-container">
-          <div class="min min-max"></div>
-          <div class="max min-max"></div>
+        <div class="weather-container">
+          <div class="location"></div>
+          <div class="main-temp"></div>
+          <div class="feels-like"></div>
+          <div class="min-max-container">
+            <div class="min min-max"></div>
+            <div class="max min-max"></div>
+          </div>
         </div>
       </div>
-      <img src=""
     </div>
+
     <script src="index.js"></script>
   </body>
 </html>
