@@ -142,7 +142,7 @@ initGeo();
 const geoInterval = setInterval(initGeo, 60000);
 let searchInterval;
 function makeSearchURL(src) {
-  return `http://api.openweathermap.org/geo/1.0/direct?q=${src}&limit=1&appid=${apiKey}`;
+  return `https://api.openweathermap.org/geo/1.0/direct?q=${src}&limit=1&appid=${apiKey}`;
   // console.log(`${url}`);
 }
 
