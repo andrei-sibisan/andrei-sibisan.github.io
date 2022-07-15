@@ -1,5 +1,6 @@
 "use strict";
-
+var timerId;
+let searchStr = "";
 //^-------------------------------------------------------------------------
 //^--------------- clock portion -------------------------------------------
 //^-------------------------------------------------------------------------
@@ -103,6 +104,15 @@ function getWeather(url) {
     .then(function (obj) {
       console.log(obj);
       weatherDisplay(obj);
+      searchStr = "";
+      clearInterval(geoInterval);
+      if (searchInterval) {
+        clearInterval(searchInterval);
+        searchInterval = setInterval(getWeather, 60000, url);
+        console.log(`i'm in search interval`);
+      } else {
+        searchInterval = setInterval(getWeather, 60000, url);
+      }
     })
     .catch(function (error) {
       alert(error);
@@ -142,7 +152,7 @@ initGeo();
 const geoInterval = setInterval(initGeo, 60000);
 let searchInterval;
 function makeSearchURL(src) {
-  return `https://api.openweathermap.org/geo/1.0/direct?q=${src}&limit=1&appid=${apiKey}`;
+  return `https://api.openweathermap.org/geo/1.0/direct?q=${src}&limit=10&appid=${apiKey}`;
   // console.log(`${url}`);
 }
 
@@ -162,6 +172,7 @@ function getSearchWeather(url) {
         alert(`City not found`);
         return;
       }
+      console.log(obj);
       let latitude = obj[0].lat;
       let longitude = obj[0].lon;
       console.log(latitude, longitude);
@@ -194,14 +205,14 @@ function searchEnter(ele) {
     getSearchWeather(url);
   }
 }
-function search(ele) {
-  let city = ele.textContent;
-  console.log(city);
+function search(lat, lon) {
   document.querySelector(".input").value = "";
   document.getElementById("result").innerHTML = "";
-  let url = makeSearchURL(city);
+  // document.getElementById("result").style = "display: none";
+
+  let url = makeURL(lat, lon, units);
   console.log(url);
-  getSearchWeather(url);
+  getWeather(url);
 }
 let search_terms = [
   `Brasov`,
@@ -225,13 +236,59 @@ function autoCompleteMatch(input) {
   });
 }
 
+let throttleFunction = function (func, delay, arg) {
+  if (timerId) {
+    return;
+  }
+  timerId = setTimeout(function () {
+    func(arg);
+    timerId = undefined;
+  }, delay);
+};
+
+let input = document.querySelector(`.input`);
+
+input.addEventListener("input", function () {
+  showResults(input.value);
+  // throttleFunction(showResults, 200, input.value);
+});
+
 function showResults(val) {
   let res = document.getElementById("result");
   res.innerHTML = "";
-  let list = "";
-  let terms = autoCompleteMatch(val.toLowerCase());
-  for (let i = 0; i < terms.length; i++) {
-    list += '<li onclick="search(this)">' + terms[i] + "</li>";
-  }
-  res.innerHTML = "<ul>" + list + "</ul>";
+  // res.style = "display: block";
+  if (val == ``) return;
+
+  let aURL = makeSearchURL(val);
+  fetch(aURL)
+    .then(function (response) {
+      res.innerHTML = "";
+      return response.json();
+    })
+    .then(function (obj) {
+      const newUL = document.createElement("ul");
+      res.appendChild(newUL);
+      obj.forEach((element) => {
+        const newLi = document.createElement("li");
+        const newContent = document.createTextNode(
+          element.name + ", " + element.country
+        );
+        newLi.appendChild(newContent);
+        newLi.addEventListener("click", function () {
+          search(element.lat, element.lon);
+        });
+        newUL.appendChild(newLi);
+      });
+      // res.innerHTML = "<ul>" + list + "</ul>";
+      return true;
+    })
+    .catch(function (error) {
+      console.warn(`Something went wrong`, error);
+      return false;
+    });
+
+  // let terms = autoCompleteMatch(val.toLowerCase());
+  // for (let i = 0; i < terms.length; i++) {
+  //   list += '<li onclick="search(this)">' + terms[i] + "</li>";
+  // }
 }
