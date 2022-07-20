@@ -14,7 +14,7 @@
     />
   </head>
   <body>
-    <div class="overcontainer sun">
+    <div class="overcontainer">
       <div class="div-input">
         <form autocomplete="off" onSubmit="return false;">
           <input
@@ -40,13 +40,21 @@
         </div>
 
         <div class="weather-container">
-          <div class="location"></div>
-          <div class="main-temp"></div>
-          <div class="feels-like"></div>
-          <div class="min-max-container">
-            <div class="min min-max"></div>
-            <div class="max min-max"></div>
+          <div class="loc-and-weather-container">
+            <div class="weather-icon"></div>
+            <div class="loc-and-weather-desc">
+              <div class="location"></div>
+              <div class="weather-description"></div>
+            </div>
           </div>
+          <div class="temp-container">
+            <div class="main-temp"></div>
+            <div class="min-max-container">
+              <div class="max min-max"></div>
+              <div class="min min-max"></div>
+            </div>
+          </div>
+          <div class="feels-like"></div>
         </div>
       </div>
     </div>
