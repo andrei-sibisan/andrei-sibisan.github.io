@@ -442,15 +442,6 @@ function search(lat, lon) {
   console.log(url);
   getWeather(url);
 }
-let search_terms = [
-  `Brasov`,
-  `Constanta`,
-  `Targoviste`,
-  `Campulung`,
-  `Slobozia`,
-  `Busteni`,
-  `Braila`,
-];
 
 function autoCompleteMatch(input) {
   if (input == ``) {
@@ -463,16 +454,6 @@ function autoCompleteMatch(input) {
     }
   });
 }
-
-let throttleFunction = function (func, delay, arg) {
-  if (timerId) {
-    return;
-  }
-  timerId = setTimeout(function () {
-    func(arg);
-    timerId = undefined;
-  }, delay);
-};
 
 let input = document.querySelector(`.input`);
 

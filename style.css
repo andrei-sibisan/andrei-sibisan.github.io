@@ -36,7 +36,9 @@ body {
   position: absolute;
   width: 100%;
 }
-
+.hidden {
+  display: none;
+}
 #result ul {
   list-style-type: none;
   padding: 0;
