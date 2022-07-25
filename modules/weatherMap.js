@@ -214,6 +214,7 @@ function gifSetter(mObj) {
   let background = weatherMap.get(timeOfDay).get(mObj.weatherMain);
 
   overcontainer.style.backgroundImage = `url(${background})`;
+  overcontainer.style.backgroundSize = `cover`;
   overcontainer.style.backgroundPosition = "center";
 }
 
