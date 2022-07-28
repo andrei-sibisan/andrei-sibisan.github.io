@@ -12,7 +12,10 @@ import { gifSetter } from "./modules/weatherMap.js";
 //^-------------------------------------------------------------------------
 let timerId = 0;
 let clockTimer = 0;
+
+console.log(masterObject);
 await masterObject.getGeoLocation();
+
 console.log(masterObject.lat, " + ", masterObject.lon);
 masterObject.makeURL();
 //^-------------------------------------------------------------------------
@@ -21,6 +24,7 @@ masterObject.makeURL();
 
 console.log(masterObject.url);
 async function update(url) {
+  document.getElementById("loader").style.display = "block";
   try {
     res.innerHTML = "";
     clearInterval(timerId);
@@ -31,6 +35,7 @@ async function update(url) {
     masterObject.getSunriseSunset();
     displayData(masterObject);
     gifSetter(masterObject);
+    document.getElementById("loader").style.display = "none";
   } catch (err) {
     console.log(err);
     alert(err);
@@ -39,8 +44,6 @@ async function update(url) {
 
 await update(masterObject.url);
 //~ we have correct sunrise and sunset times
-
-console.log(masterObject);
 
 //~ from this point on we have all our data from geolocation and date. good hunting!
 
@@ -92,13 +95,17 @@ masterObject.inputField.addEventListener("input", () => {
   masterObject.makeSearchURL(masterObject.inputField.value);
   // masterObject.suggestions.length = 0;
   res.innerHTML = "";
-  updateSearch(masterObject.urlSearch, 1).then((value) => {
-    showResults(value, masterObject, timerId);
-  });
+  updateSearch(masterObject.urlSearch, 1)
+    .then((value) => {
+      showResults(value, masterObject, timerId);
+    })
+    .catch((error) => {
+      console.log(`Error, search results is void `, error);
+    });
 });
 
-masterObject.inputField.addEventListener("blur", () => {
-  console.log(masterObject.suggestions);
-  masterObject.suggestions.length = 0;
-  res.classList.toggle(".hidden");
-});
+// masterObject.inputField.addEventListener("blur", () => {
+//   masterObject.suggestions.length = 0;
+//   res.innerHTML = "";
+//   res.classList.toggle(".hidden");
+// });
