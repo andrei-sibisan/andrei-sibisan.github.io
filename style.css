@@ -7,8 +7,8 @@ body {
   font-family: "Poppins", sans-serif;
 }
 .overcontainer {
-  width: 500px;
-  height: 250px;
+  width: 400px;
+  height: 200px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -16,7 +16,46 @@ body {
   justify-content: space-evenly;
   background-repeat: no-repeat;
 }
-
+#loader {
+  width: 400px;
+  height: 200px;
+  position: absolute;
+  display: block;
+  background-color: #495057;
+  z-index: 9;
+}
+.skeleton {
+  animation: skeleton-animation 1s linear infinite alternate;
+}
+@keyframes skeleton-animation {
+  0% {
+    background-color: #49505723;
+  }
+  100% {
+    background-color: #495057de;
+  }
+}
+.skeleton-text {
+  width: 100%;
+  height: 0.7rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.25rem;
+}
+.loader-wrapper {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #343a40;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* display: none; */
+}
+.hidden {
+  display: none;
+}
 .div-input {
   width: 70%;
   position: relative;
@@ -37,9 +76,7 @@ body {
   width: 100%;
   z-index: 1000;
 }
-.hidden {
-  display: none;
-}
+
 #result ul {
   list-style-type: none;
   padding: 0;

@@ -4,6 +4,7 @@ import { displayData, res } from "./view.js";
 import { gifSetter } from "./weatherMap.js";
 
 export async function updateMod(url, mObj) {
+  document.getElementById("loader").style.display = "block";
   try {
     const response = await fetch(url);
     const data = await response.json();
@@ -14,6 +15,7 @@ export async function updateMod(url, mObj) {
     displayData(mObj);
     res.innerHTML = "";
     gifSetter(mObj);
+    document.getElementById("loader").style.display = "none";
   } catch (err) {
     console.log(err);
     alert(err);
